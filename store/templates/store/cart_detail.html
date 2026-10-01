@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Your cart{% endblock %}
+{% block content %}
+  <h2>Your cart</h2>
+  {% if cart|length %}
+    <table style="width:100%; border-collapse:collapse">
+      <tr style="text-align:left">
+        <th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th></th>
+      </tr>
+      {% for item in cart %}
+        <tr>
+          <td><a href="{% url 'product_detail' item.product.pk %}">{{ item.product.name }}</a></td>
+          <td>KES {{ item.product.price }}</td>
+          <td>
+            <form method="post" action="{% url 'cart_update' item.product.pk %}">
+              {% csrf_token %}
+              <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" style="width:70px">
+              <button class="btn" type="submit">Update</button>
+            </form>
+          </td>
+          <td>KES {{ item.subtotal }}</td>
+          <td>
+            <form method="post" action="{% url 'cart_remove' item.product.pk %}">
+              {% csrf_token %}
+              <button type="submit">Remove</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+    <h3>Total: KES {{ cart.total }}</h3>
+    <p><a href="{% url 'product_list' %}">&larr; Continue shopping</a></p>
+  {% else %}
+    <p>Your cart is empty. <a href="{% url 'product_list' %}">Browse products</a></p>
+  {% endif %}
+{% endblock %}
