@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order.pk }}{% endblock %}
+{% block content %}
+  <h2>Order #{{ order.pk }}</h2>
+  <p>Status: <strong>{{ order.get_status_display }}</strong></p>
+  <p>Name: {{ order.full_name }} &middot; Phone: {{ order.phone }}</p>
+  <ul>
+    {% for item in order.items.all %}
+      <li>{{ item.quantity }} x {{ item.product.name }}: KES {{ item.subtotal }}</li>
+    {% endfor %}
+  </ul>
+  <h3>Total: KES {{ order.total }}</h3>
+
+  {% if order.status == "pending" %}
+    <p class="muted">An M-Pesa prompt has been sent to {{ order.phone }}. Enter your PIN to complete payment.</p>
+    {% if simulated %}
+      <form method="post" action="{% url 'simulate_payment' order.pk %}">
+        {% csrf_token %}
+        <button class="btn" type="submit">Simulate M-Pesa payment (demo mode)</button>
+      </form>
+    {% endif %}
+  {% elif order.status == "paid" %}
+    <p class="price">Payment received. Receipt: {{ order.mpesa_receipt }}</p>
+  {% else %}
+    <p>Payment failed. <a href="{% url 'cart_detail' %}">Try again</a></p>
+  {% endif %}
+  <p><a href="{% url 'product_list' %}">&larr; Continue shopping</a></p>
+{% endblock %}
