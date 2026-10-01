@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Product
+from .models import Category, Order, OrderItem, Product
 
 
 @admin.register(Category)
@@ -13,3 +13,17 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ("name", "category", "price", "stock", "is_active")
     list_filter = ("category", "is_active")
     search_fields = ("name", "description")
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    readonly_fields = ("product", "price", "quantity")
+    can_delete = False
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ("id", "full_name", "phone", "total", "status", "created_at")
+    list_filter = ("status",)
+    inlines = [OrderItemInline]
