@@ -18,8 +18,9 @@
   </style>
 </head>
 <body>
-  <nav>
+ <nav>
     <strong><a href="{% url 'product_list' %}">Duka Store</a></strong>
+    <a href="{% url 'cart_detail' %}">Cart ({{ cart|length }})</a>
   </nav>
   {% block content %}{% endblock %}
 </body>
